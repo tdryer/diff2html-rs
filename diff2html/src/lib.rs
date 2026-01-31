@@ -28,11 +28,16 @@
 //! ```
 
 pub mod parser;
+pub mod rematch;
 pub mod render;
 pub mod templates;
 pub mod types;
 
 pub use parser::{DiffParserConfig, parse};
+pub use rematch::{
+    BestMatch, MatchConfig, MatchGroup, levenshtein, match_lines, match_lines_with_config,
+    new_distance_fn, string_distance,
+};
 pub use render::{
     FileListConfig, FileListRenderer, LineByLineRenderer, RendererConfig, SideBySideRenderer,
 };
