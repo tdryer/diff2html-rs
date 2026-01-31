@@ -234,6 +234,7 @@ dependencies = [
  "clap",
  "diff2html",
  "open",
+ "serde_json",
 ]
 
 [[package]]
