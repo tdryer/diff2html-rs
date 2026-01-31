@@ -24,7 +24,7 @@
 pub mod parser;
 pub mod types;
 
-pub use parser::{parse, DiffParserConfig};
+pub use parser::{DiffParserConfig, parse};
 pub use types::{
     Checksum, ColorScheme, DiffBlock, DiffFile, DiffLine, DiffLineParts, DiffStyle, FileMode,
     LineMatchingType, LineType, OutputFormat,

@@ -32,7 +32,10 @@ impl std::fmt::Debug for DiffParserConfig {
             .field("dst_prefix", &self.dst_prefix)
             .field("diff_max_changes", &self.diff_max_changes)
             .field("diff_max_line_length", &self.diff_max_line_length)
-            .field("diff_too_big_message", &self.diff_too_big_message.as_ref().map(|_| "<fn>"))
+            .field(
+                "diff_too_big_message",
+                &self.diff_too_big_message.as_ref().map(|_| "<fn>"),
+            )
             .finish()
     }
 }
@@ -74,14 +77,16 @@ static COMBINED_DELETED_FILE: Lazy<Regex> =
 // Hunk header patterns
 static HUNK_HEADER: Lazy<Regex> =
     Lazy::new(|| Regex::new(r"^@@ -(\d+)(?:,\d+)? \+(\d+)(?:,\d+)? @@.*").unwrap());
-static COMBINED_HUNK_HEADER: Lazy<Regex> =
-    Lazy::new(|| Regex::new(r"^@@@ -(\d+)(?:,\d+)? -(\d+)(?:,\d+)? \+(\d+)(?:,\d+)? @@@.*").unwrap());
+static COMBINED_HUNK_HEADER: Lazy<Regex> = Lazy::new(|| {
+    Regex::new(r"^@@@ -(\d+)(?:,\d+)? -(\d+)(?:,\d+)? \+(\d+)(?:,\d+)? @@@.*").unwrap()
+});
 
 // Git diff start pattern
 static GIT_DIFF_START: Lazy<Regex> =
     Lazy::new(|| Regex::new(r#"^diff --git "?([a-ciow]/.+)"? "?([a-ciow]/.+)"?"#).unwrap());
-static UNIX_DIFF_BINARY_START: Lazy<Regex> =
-    Lazy::new(|| Regex::new(r#"^Binary files "?([a-ciow]/.+)"? and "?([a-ciow]/.+)"? differ"#).unwrap());
+static UNIX_DIFF_BINARY_START: Lazy<Regex> = Lazy::new(|| {
+    Regex::new(r#"^Binary files "?([a-ciow]/.+)"? and "?([a-ciow]/.+)"? differ"#).unwrap()
+});
 
 /// Base prefixes used in diff file paths.
 const BASE_DIFF_FILENAME_PREFIXES: &[&str] = &["a/", "b/", "i/", "w/", "c/", "o/"];
@@ -155,8 +160,8 @@ fn get_filename(line: &str, line_prefix: Option<&str>, extra_prefix: Option<&str
         .unwrap_or(filename);
 
     // Remove timestamp suffix (e.g., "2016-10-25 11:37:14.000000000 +0200")
-    let timestamp_re = Regex::new(r"\s+\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(?:\.\d+)? [+-]\d{4}.*$")
-        .unwrap();
+    let timestamp_re =
+        Regex::new(r"\s+\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(?:\.\d+)? [+-]\d{4}.*$").unwrap();
     timestamp_re.replace(&fname_without_prefix, "").to_string()
 }
 
@@ -488,9 +493,10 @@ pub fn parse(diff_input: &str, config: &DiffParserConfig) -> Vec<DiffFile> {
         // Handle hunk header
         if state.current_file.is_some() {
             let is_hunk_header = line.starts_with(HUNK_HEADER_PREFIX);
-            let should_start_block = state.current_file.as_ref().is_some_and(|f| {
-                f.is_git_diff && !f.old_name.is_empty() && !f.new_name.is_empty()
-            }) && state.current_block.is_none();
+            let should_start_block =
+                state.current_file.as_ref().is_some_and(|f| {
+                    f.is_git_diff && !f.old_name.is_empty() && !f.new_name.is_empty()
+                }) && state.current_block.is_none();
 
             if is_hunk_header || should_start_block {
                 state.start_block(line);
@@ -514,7 +520,9 @@ pub fn parse(diff_input: &str, config: &DiffParserConfig) -> Vec<DiffFile> {
         };
 
         if let Some(caps) = OLD_MODE.captures(line) {
-            file.old_mode = caps.get(1).map(|m| FileMode::Single(m.as_str().to_string()));
+            file.old_mode = caps
+                .get(1)
+                .map(|m| FileMode::Single(m.as_str().to_string()));
         } else if let Some(caps) = NEW_MODE.captures(line) {
             file.new_mode = caps.get(1).map(|m| m.as_str().to_string());
         } else if let Some(caps) = DELETED_FILE_MODE.captures(line) {
@@ -525,22 +533,34 @@ pub fn parse(diff_input: &str, config: &DiffParserConfig) -> Vec<DiffFile> {
             file.is_new = Some(true);
         } else if let Some(caps) = COPY_FROM.captures(line) {
             if does_not_exist_hunk_header {
-                file.old_name = caps.get(1).map(|m| m.as_str().to_string()).unwrap_or_default();
+                file.old_name = caps
+                    .get(1)
+                    .map(|m| m.as_str().to_string())
+                    .unwrap_or_default();
             }
             file.is_copy = Some(true);
         } else if let Some(caps) = COPY_TO.captures(line) {
             if does_not_exist_hunk_header {
-                file.new_name = caps.get(1).map(|m| m.as_str().to_string()).unwrap_or_default();
+                file.new_name = caps
+                    .get(1)
+                    .map(|m| m.as_str().to_string())
+                    .unwrap_or_default();
             }
             file.is_copy = Some(true);
         } else if let Some(caps) = RENAME_FROM.captures(line) {
             if does_not_exist_hunk_header {
-                file.old_name = caps.get(1).map(|m| m.as_str().to_string()).unwrap_or_default();
+                file.old_name = caps
+                    .get(1)
+                    .map(|m| m.as_str().to_string())
+                    .unwrap_or_default();
             }
             file.is_rename = Some(true);
         } else if let Some(caps) = RENAME_TO.captures(line) {
             if does_not_exist_hunk_header {
-                file.new_name = caps.get(1).map(|m| m.as_str().to_string()).unwrap_or_default();
+                file.new_name = caps
+                    .get(1)
+                    .map(|m| m.as_str().to_string())
+                    .unwrap_or_default();
             }
             file.is_rename = Some(true);
         } else if let Some(caps) = BINARY_FILES.captures(line) {
@@ -562,19 +582,29 @@ pub fn parse(diff_input: &str, config: &DiffParserConfig) -> Vec<DiffFile> {
         } else if let Some(caps) = DISSIMILARITY_INDEX.captures(line) {
             file.changed_percentage = caps.get(1).and_then(|m| m.as_str().parse().ok());
         } else if let Some(caps) = INDEX.captures(line) {
-            file.checksum_before = caps.get(1).map(|m| Checksum::Single(m.as_str().to_string()));
+            file.checksum_before = caps
+                .get(1)
+                .map(|m| Checksum::Single(m.as_str().to_string()));
             file.checksum_after = caps.get(2).map(|m| m.as_str().to_string());
             file.mode = caps.get(3).map(|m| m.as_str().to_string());
         } else if let Some(caps) = COMBINED_INDEX.captures(line) {
             file.checksum_before = Some(Checksum::Multiple(vec![
-                caps.get(2).map(|m| m.as_str().to_string()).unwrap_or_default(),
-                caps.get(3).map(|m| m.as_str().to_string()).unwrap_or_default(),
+                caps.get(2)
+                    .map(|m| m.as_str().to_string())
+                    .unwrap_or_default(),
+                caps.get(3)
+                    .map(|m| m.as_str().to_string())
+                    .unwrap_or_default(),
             ]));
             file.checksum_after = caps.get(1).map(|m| m.as_str().to_string());
         } else if let Some(caps) = COMBINED_MODE.captures(line) {
             file.old_mode = Some(FileMode::Multiple(vec![
-                caps.get(2).map(|m| m.as_str().to_string()).unwrap_or_default(),
-                caps.get(3).map(|m| m.as_str().to_string()).unwrap_or_default(),
+                caps.get(2)
+                    .map(|m| m.as_str().to_string())
+                    .unwrap_or_default(),
+                caps.get(3)
+                    .map(|m| m.as_str().to_string())
+                    .unwrap_or_default(),
             ]));
             file.new_mode = caps.get(1).map(|m| m.as_str().to_string());
         } else if let Some(caps) = COMBINED_NEW_FILE.captures(line) {

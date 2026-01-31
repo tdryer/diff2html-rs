@@ -102,7 +102,6 @@ pub struct DiffFile {
     pub mode: Option<String>,
 }
 
-
 /// Output format for HTML rendering.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
