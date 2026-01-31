@@ -1,0 +1,13 @@
+diff --git a/src/test-bar.js b/src/test-baz.js
+similarity index 98%
+rename from src/test-bar.js
+rename to src/test-baz.js
+index e01513b..f14a870 100644
+--- a/src/test-bar.js
++++ b/src/test-baz.js
+@@ -1,4 +1,32 @@
+ function foo() {
+-var bar = "Whoops!";
++var baz = "Whoops!";
+ }
+

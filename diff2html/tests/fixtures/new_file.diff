@@ -1,0 +1,11 @@
+diff --git a/test.js b/test.js
+new file mode 100644
+index 0000000..e1e22ec
+--- /dev/null
++++ b/test.js
+@@ -0,0 +1,5 @@
++var parser = require('./source/git-parser');
++
++var patchLineList = [ false, false, false, false ];
++
++console.log(parser.parsePatchDiffResult(text, patchLineList));

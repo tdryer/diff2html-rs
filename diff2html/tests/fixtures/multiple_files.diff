@@ -1,0 +1,24 @@
+diff --git a/src/core/init.js b/src/core/init.js
+index e49196a..50f310c 100644
+--- a/src/core/init.js
++++ b/src/core/init.js
+@@ -101,7 +101,7 @@ var rootjQuery,
+     // HANDLE: $(function)
+     // Shortcut for document ready
+     } else if ( jQuery.isFunction( selector ) ) {
+-      return typeof rootjQuery.ready !== "undefined" ?
++      return rootjQuery.ready !== undefined ?
+         rootjQuery.ready( selector ) :
+         // Execute immediately if ready is not present
+         selector( jQuery );
+diff --git a/src/event.js b/src/event.js
+index 7336f4d..6183f70 100644
+--- a/src/event.js
++++ b/src/event.js
+@@ -1,6 +1,5 @@
+ define([
+   "./core",
+-  "./var/strundefined",
+   "./var/rnotwhite",
+   "./var/hasOwn",
+   "./var/slice",

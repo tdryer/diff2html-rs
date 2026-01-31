@@ -1,0 +1,8 @@
+diff --git "a/bla with 	tab.scala" "b/bla with 	tab.scala"
+index 4c679d7..e9bd385 100644
+--- "a/bla with 	tab.scala"
++++ "b/bla with 	tab.scala"
+@@ -1 +1,2 @@
+-cenas
++cenas com ananas
++bananas
