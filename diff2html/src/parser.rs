@@ -206,15 +206,15 @@ impl ParserState {
     /// Saves current file to files list.
     fn save_file(&mut self) {
         if let Some(mut file) = self.current_file.take() {
-            if file.old_name.is_empty() {
-                if let Some(name) = self.possible_old_name.take() {
-                    file.old_name = name;
-                }
+            if file.old_name.is_empty()
+                && let Some(name) = self.possible_old_name.take()
+            {
+                file.old_name = name;
             }
-            if file.new_name.is_empty() {
-                if let Some(name) = self.possible_new_name.take() {
-                    file.new_name = name;
-                }
+            if file.new_name.is_empty()
+                && let Some(name) = self.possible_new_name.take()
+            {
+                file.new_name = name;
             }
             if !file.new_name.is_empty() {
                 self.files.push(file);
@@ -467,21 +467,21 @@ pub fn parse(diff_input: &str, config: &DiffParserConfig) -> Vec<DiffFile> {
         let prev_is_old = prev_line.is_some_and(|l| l.starts_with(OLD_FILE_NAME_HEADER));
         let next_is_new = next_line.is_some_and(|l| l.starts_with(NEW_FILE_NAME_HEADER));
 
-        if (is_old_header && next_is_new) || (is_new_header && prev_is_old) {
-            if let Some(file) = &mut state.current_file {
-                if file.old_name.is_empty() && line.starts_with("--- ") {
-                    let name = get_src_filename(line, config.src_prefix.as_deref());
-                    file.old_name = name.clone();
-                    file.language = get_extension(&name, &file.language);
-                    continue;
-                }
+        if ((is_old_header && next_is_new) || (is_new_header && prev_is_old))
+            && let Some(file) = &mut state.current_file
+        {
+            if file.old_name.is_empty() && line.starts_with("--- ") {
+                let name = get_src_filename(line, config.src_prefix.as_deref());
+                file.old_name = name.clone();
+                file.language = get_extension(&name, &file.language);
+                continue;
+            }
 
-                if file.new_name.is_empty() && line.starts_with("+++ ") {
-                    let name = get_dst_filename(line, config.dst_prefix.as_deref());
-                    file.new_name = name.clone();
-                    file.language = get_extension(&name, &file.language);
-                    continue;
-                }
+            if file.new_name.is_empty() && line.starts_with("+++ ") {
+                let name = get_dst_filename(line, config.dst_prefix.as_deref());
+                file.new_name = name.clone();
+                file.language = get_extension(&name, &file.language);
+                continue;
             }
         }
 

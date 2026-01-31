@@ -58,7 +58,7 @@ pub enum Checksum {
 }
 
 /// A complete diff file with all metadata and blocks.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DiffFile {
     pub old_name: String,
@@ -102,35 +102,6 @@ pub struct DiffFile {
     pub mode: Option<String>,
 }
 
-impl Default for DiffFile {
-    fn default() -> Self {
-        Self {
-            old_name: String::new(),
-            new_name: String::new(),
-            added_lines: 0,
-            deleted_lines: 0,
-            is_combined: false,
-            is_git_diff: false,
-            language: String::new(),
-            blocks: Vec::new(),
-            old_mode: None,
-            new_mode: None,
-            deleted_file_mode: None,
-            new_file_mode: None,
-            is_deleted: None,
-            is_new: None,
-            is_copy: None,
-            is_rename: None,
-            is_binary: None,
-            is_too_big: None,
-            unchanged_percentage: None,
-            changed_percentage: None,
-            checksum_before: None,
-            checksum_after: None,
-            mode: None,
-        }
-    }
-}
 
 /// Output format for HTML rendering.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
