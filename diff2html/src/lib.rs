@@ -7,6 +7,7 @@
 //!
 //! ```
 //! use diff2html::{parse, DiffParserConfig};
+//! use diff2html::render::LineByLineRenderer;
 //!
 //! let diff = r#"diff --git a/test.txt b/test.txt
 //! --- a/test.txt
@@ -19,14 +20,23 @@
 //! let files = parse(diff, &DiffParserConfig::default());
 //! assert_eq!(files.len(), 1);
 //! assert_eq!(files[0].new_name, "test.txt");
+//!
+//! // Render to HTML
+//! let renderer = LineByLineRenderer::default();
+//! let html = renderer.render(&files);
+//! assert!(html.contains("d2h-wrapper"));
 //! ```
 
 pub mod parser;
+pub mod render;
 pub mod templates;
 pub mod types;
 
 pub use parser::{DiffParserConfig, parse};
-pub use templates::{CSS, TemplateName, render, render_by_name};
+pub use render::{
+    FileListConfig, FileListRenderer, LineByLineRenderer, RendererConfig, SideBySideRenderer,
+};
+pub use templates::{CSS, TemplateName, render as render_template, render_by_name};
 pub use types::{
     Checksum, ColorScheme, DiffBlock, DiffFile, DiffLine, DiffLineParts, DiffStyle, FileMode,
     LineMatchingType, LineType, OutputFormat,
