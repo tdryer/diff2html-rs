@@ -22,9 +22,11 @@
 //! ```
 
 pub mod parser;
+pub mod templates;
 pub mod types;
 
 pub use parser::{DiffParserConfig, parse};
+pub use templates::{CSS, TemplateName, render, render_by_name};
 pub use types::{
     Checksum, ColorScheme, DiffBlock, DiffFile, DiffLine, DiffLineParts, DiffStyle, FileMode,
     LineMatchingType, LineType, OutputFormat,

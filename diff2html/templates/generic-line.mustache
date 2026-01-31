@@ -1,0 +1,19 @@
+<tr>
+    <td class="{{lineClass}} {{type}}">
+      {{{lineNumber}}}
+    </td>
+    <td class="{{type}}">
+        <div class="{{contentClass}}">
+        {{#if prefix}}
+            <span class="d2h-code-line-prefix">{{{prefix}}}</span>
+        {{else}}
+            <span class="d2h-code-line-prefix">&nbsp;</span>
+        {{/if}}
+        {{#if content}}
+            <span class="d2h-code-line-ctn">{{{content}}}</span>
+        {{else}}
+            <span class="d2h-code-line-ctn"><br></span>
+        {{/if}}
+        </div>
+    </td>
+</tr>
