@@ -5,8 +5,8 @@
 //! - Preview in browser
 //! - Writing to stdout or files
 
-use std::env;
 use std::fs;
+use std::io::Write;
 use std::path::PathBuf;
 
 use anyhow::{Context, Result, bail};
@@ -161,16 +161,26 @@ fn prepare_html(diff_content: &str, config: &CliConfig) -> Result<String> {
 
 /// Preview content in browser by writing to a temp file.
 pub fn preview(content: &str, format: FormatType) -> Result<()> {
-    let extension = match format {
-        FormatType::Html => "html",
-        FormatType::Json => "json",
+    let suffix = match format {
+        FormatType::Html => ".html",
+        FormatType::Json => ".json",
     };
 
-    let filename = format!("diff.{}", extension);
-    let file_path = env::temp_dir().join(filename);
+    // Use tempfile crate for secure temp file creation with random name
+    let mut temp_file = tempfile::Builder::new()
+        .prefix("diff2html-")
+        .suffix(suffix)
+        .tempfile()
+        .context("Failed to create secure temporary file")?;
 
-    fs::write(&file_path, content)
-        .with_context(|| format!("Failed to write temp file: {}", file_path.display()))?;
+    temp_file
+        .write_all(content.as_bytes())
+        .context("Failed to write to temporary file")?;
+
+    // Keep the file around after the handle is dropped so the browser can open it
+    let (_, file_path) = temp_file
+        .keep()
+        .context("Failed to persist temporary file")?;
 
     open::that(&file_path)
         .with_context(|| format!("Failed to open file in browser: {}", file_path.display()))?;
