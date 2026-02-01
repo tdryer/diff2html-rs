@@ -132,15 +132,12 @@ pub fn escape_for_html(s: &str) -> String {
 /// * `escape` - Whether to HTML-escape the content
 pub fn deconstruct_line(line: &str, is_combined: bool, escape: bool) -> DiffLineParts {
     let index_to_split = prefix_length(is_combined);
-    let prefix = if line.len() >= index_to_split {
-        &line[..index_to_split]
-    } else {
-        line
-    };
-    let content = if line.len() > index_to_split {
-        &line[index_to_split..]
-    } else {
-        ""
+
+    // Safe slicing using get() - returns None if index is out of bounds or not on a char boundary
+    let (prefix, content) = match (line.get(..index_to_split), line.get(index_to_split..)) {
+        (Some(p), Some(c)) => (p, c),
+        (Some(p), None) => (p, ""),
+        (None, _) => (line, ""),
     };
 
     DiffLineParts {
@@ -582,5 +579,27 @@ mod tests {
         let input = "hello <del>world</del> test";
         let result = remove_del_elements(input);
         assert_eq!(result, "hello  test");
+    }
+
+    #[test]
+    fn test_deconstruct_line_multibyte_chars() {
+        // Test with multi-byte UTF-8 characters (emoji, CJK characters)
+        let parts = deconstruct_line("+🎉hello", false, true);
+        assert_eq!(parts.prefix, "+");
+        assert_eq!(parts.content, "🎉hello");
+
+        let parts = deconstruct_line("-中文", false, true);
+        assert_eq!(parts.prefix, "-");
+        assert_eq!(parts.content, "中文");
+
+        // Test with combined diff
+        let parts = deconstruct_line("++🚀test", true, true);
+        assert_eq!(parts.prefix, "++");
+        assert_eq!(parts.content, "🚀test");
+
+        // Test edge case: line shorter than expected prefix
+        let parts = deconstruct_line("a", false, true);
+        assert_eq!(parts.prefix, "a");
+        assert_eq!(parts.content, "");
     }
 }
