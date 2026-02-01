@@ -4,19 +4,8 @@
 
 use std::process::Command;
 
-/// Helper to get the path to the built binary
-fn binary_path() -> std::path::PathBuf {
-    let mut path = std::env::current_exe().unwrap();
-    path.pop(); // Remove test binary name
-    path.pop(); // Remove deps directory
-    path.push("diff2html-cli");
-    path
-}
-
-/// Helper to check if the binary exists
-fn binary_exists() -> bool {
-    binary_path().exists()
-}
+/// Path to the built binary, provided by Cargo at compile time
+const BINARY_PATH: &str = env!("CARGO_BIN_EXE_diff2html");
 
 /// Helper to load a test fixture
 fn fixture_path(name: &str) -> String {
@@ -29,12 +18,7 @@ fn fixture_path(name: &str) -> String {
 
 #[test]
 fn test_cli_help() {
-    if !binary_exists() {
-        eprintln!("Skipping test: binary not built");
-        return;
-    }
-
-    let output = Command::new(binary_path())
+    let output = Command::new(BINARY_PATH)
         .arg("--help")
         .output()
         .expect("Failed to execute command");
@@ -54,12 +38,7 @@ fn test_cli_help() {
 
 #[test]
 fn test_cli_version() {
-    if !binary_exists() {
-        eprintln!("Skipping test: binary not built");
-        return;
-    }
-
-    let output = Command::new(binary_path())
+    let output = Command::new(BINARY_PATH)
         .arg("--version")
         .output()
         .expect("Failed to execute command");
@@ -83,12 +62,7 @@ fn test_cli_version() {
 
 #[test]
 fn test_cli_file_input() {
-    if !binary_exists() {
-        eprintln!("Skipping test: binary not built");
-        return;
-    }
-
-    let output = Command::new(binary_path())
+    let output = Command::new(BINARY_PATH)
         .args([
             "-i",
             "file",
@@ -111,15 +85,10 @@ fn test_cli_file_input() {
 
 #[test]
 fn test_cli_stdin_input() {
-    if !binary_exists() {
-        eprintln!("Skipping test: binary not built");
-        return;
-    }
-
     let diff_content =
         std::fs::read_to_string(fixture_path("simple.diff")).expect("Failed to read fixture");
 
-    let mut child = Command::new(binary_path())
+    let mut child = Command::new(BINARY_PATH)
         .args(["-i", "stdin", "-o", "stdout"])
         .stdin(std::process::Stdio::piped())
         .stdout(std::process::Stdio::piped())
@@ -152,15 +121,10 @@ fn test_cli_stdin_input() {
 
 #[test]
 fn test_cli_html_format() {
-    if !binary_exists() {
-        eprintln!("Skipping test: binary not built");
-        return;
-    }
-
     let diff_content =
         std::fs::read_to_string(fixture_path("simple.diff")).expect("Failed to read fixture");
 
-    let mut child = Command::new(binary_path())
+    let mut child = Command::new(BINARY_PATH)
         .args(["-i", "stdin", "-o", "stdout", "-f", "html"])
         .stdin(std::process::Stdio::piped())
         .stdout(std::process::Stdio::piped())
@@ -193,15 +157,10 @@ fn test_cli_html_format() {
 
 #[test]
 fn test_cli_json_format() {
-    if !binary_exists() {
-        eprintln!("Skipping test: binary not built");
-        return;
-    }
-
     let diff_content =
         std::fs::read_to_string(fixture_path("simple.diff")).expect("Failed to read fixture");
 
-    let mut child = Command::new(binary_path())
+    let mut child = Command::new(BINARY_PATH)
         .args(["-i", "stdin", "-o", "stdout", "-f", "json"])
         .stdin(std::process::Stdio::piped())
         .stdout(std::process::Stdio::piped())
@@ -238,15 +197,10 @@ fn test_cli_json_format() {
 
 #[test]
 fn test_cli_line_by_line_style() {
-    if !binary_exists() {
-        eprintln!("Skipping test: binary not built");
-        return;
-    }
-
     let diff_content =
         std::fs::read_to_string(fixture_path("simple.diff")).expect("Failed to read fixture");
 
-    let mut child = Command::new(binary_path())
+    let mut child = Command::new(BINARY_PATH)
         .args(["-i", "stdin", "-o", "stdout", "-s", "line"])
         .stdin(std::process::Stdio::piped())
         .stdout(std::process::Stdio::piped())
@@ -275,15 +229,10 @@ fn test_cli_line_by_line_style() {
 
 #[test]
 fn test_cli_side_by_side_style() {
-    if !binary_exists() {
-        eprintln!("Skipping test: binary not built");
-        return;
-    }
-
     let diff_content =
         std::fs::read_to_string(fixture_path("simple.diff")).expect("Failed to read fixture");
 
-    let mut child = Command::new(binary_path())
+    let mut child = Command::new(BINARY_PATH)
         .args(["-i", "stdin", "-o", "stdout", "-s", "side"])
         .stdin(std::process::Stdio::piped())
         .stdout(std::process::Stdio::piped())
@@ -316,15 +265,10 @@ fn test_cli_side_by_side_style() {
 
 #[test]
 fn test_cli_dark_color_scheme() {
-    if !binary_exists() {
-        eprintln!("Skipping test: binary not built");
-        return;
-    }
-
     let diff_content =
         std::fs::read_to_string(fixture_path("simple.diff")).expect("Failed to read fixture");
 
-    let mut child = Command::new(binary_path())
+    let mut child = Command::new(BINARY_PATH)
         .args(["-i", "stdin", "-o", "stdout", "--colorScheme", "dark"])
         .stdin(std::process::Stdio::piped())
         .stdout(std::process::Stdio::piped())
@@ -353,15 +297,10 @@ fn test_cli_dark_color_scheme() {
 
 #[test]
 fn test_cli_light_color_scheme() {
-    if !binary_exists() {
-        eprintln!("Skipping test: binary not built");
-        return;
-    }
-
     let diff_content =
         std::fs::read_to_string(fixture_path("simple.diff")).expect("Failed to read fixture");
 
-    let mut child = Command::new(binary_path())
+    let mut child = Command::new(BINARY_PATH)
         .args(["-i", "stdin", "-o", "stdout", "--colorScheme", "light"])
         .stdin(std::process::Stdio::piped())
         .stdout(std::process::Stdio::piped())
@@ -394,15 +333,10 @@ fn test_cli_light_color_scheme() {
 
 #[test]
 fn test_cli_word_diff_style() {
-    if !binary_exists() {
-        eprintln!("Skipping test: binary not built");
-        return;
-    }
-
     let diff_content =
         std::fs::read_to_string(fixture_path("simple.diff")).expect("Failed to read fixture");
 
-    let mut child = Command::new(binary_path())
+    let mut child = Command::new(BINARY_PATH)
         .args(["-i", "stdin", "-o", "stdout", "-d", "word"])
         .stdin(std::process::Stdio::piped())
         .stdout(std::process::Stdio::piped())
@@ -425,15 +359,10 @@ fn test_cli_word_diff_style() {
 
 #[test]
 fn test_cli_char_diff_style() {
-    if !binary_exists() {
-        eprintln!("Skipping test: binary not built");
-        return;
-    }
-
     let diff_content =
         std::fs::read_to_string(fixture_path("simple.diff")).expect("Failed to read fixture");
 
-    let mut child = Command::new(binary_path())
+    let mut child = Command::new(BINARY_PATH)
         .args(["-i", "stdin", "-o", "stdout", "-d", "char"])
         .stdin(std::process::Stdio::piped())
         .stdout(std::process::Stdio::piped())
@@ -460,15 +389,10 @@ fn test_cli_char_diff_style() {
 
 #[test]
 fn test_cli_multiple_files() {
-    if !binary_exists() {
-        eprintln!("Skipping test: binary not built");
-        return;
-    }
-
     let diff_content = std::fs::read_to_string(fixture_path("multiple_files.diff"))
         .expect("Failed to read fixture");
 
-    let mut child = Command::new(binary_path())
+    let mut child = Command::new(BINARY_PATH)
         .args(["-i", "stdin", "-o", "stdout"])
         .stdin(std::process::Stdio::piped())
         .stdout(std::process::Stdio::piped())
@@ -505,12 +429,7 @@ fn test_cli_multiple_files() {
 
 #[test]
 fn test_cli_empty_input() {
-    if !binary_exists() {
-        eprintln!("Skipping test: binary not built");
-        return;
-    }
-
-    let mut child = Command::new(binary_path())
+    let mut child = Command::new(BINARY_PATH)
         .args(["-i", "stdin", "-o", "stdout"])
         .stdin(std::process::Stdio::piped())
         .stdout(std::process::Stdio::piped())
@@ -533,15 +452,10 @@ fn test_cli_empty_input() {
 
 #[test]
 fn test_cli_binary_diff() {
-    if !binary_exists() {
-        eprintln!("Skipping test: binary not built");
-        return;
-    }
-
     let diff_content =
         std::fs::read_to_string(fixture_path("binary.diff")).expect("Failed to read fixture");
 
-    let mut child = Command::new(binary_path())
+    let mut child = Command::new(BINARY_PATH)
         .args(["-i", "stdin", "-o", "stdout"])
         .stdin(std::process::Stdio::piped())
         .stdout(std::process::Stdio::piped())
@@ -578,15 +492,10 @@ fn test_cli_binary_diff() {
 
 #[test]
 fn test_cli_combined_diff() {
-    if !binary_exists() {
-        eprintln!("Skipping test: binary not built");
-        return;
-    }
-
     let diff_content =
         std::fs::read_to_string(fixture_path("combined.diff")).expect("Failed to read fixture");
 
-    let mut child = Command::new(binary_path())
+    let mut child = Command::new(BINARY_PATH)
         .args(["-i", "stdin", "-o", "stdout"])
         .stdin(std::process::Stdio::piped())
         .stdout(std::process::Stdio::piped())
@@ -615,15 +524,10 @@ fn test_cli_combined_diff() {
 
 #[test]
 fn test_cli_custom_title() {
-    if !binary_exists() {
-        eprintln!("Skipping test: binary not built");
-        return;
-    }
-
     let diff_content =
         std::fs::read_to_string(fixture_path("simple.diff")).expect("Failed to read fixture");
 
-    let mut child = Command::new(binary_path())
+    let mut child = Command::new(BINARY_PATH)
         .args(["-i", "stdin", "-o", "stdout", "-t", "My Custom Title"])
         .stdin(std::process::Stdio::piped())
         .stdout(std::process::Stdio::piped())
@@ -651,12 +555,7 @@ fn test_cli_custom_title() {
 
 #[test]
 fn test_cli_nonexistent_file() {
-    if !binary_exists() {
-        eprintln!("Skipping test: binary not built");
-        return;
-    }
-
-    let output = Command::new(binary_path())
+    let output = Command::new(BINARY_PATH)
         .args([
             "-i",
             "file",
@@ -674,12 +573,7 @@ fn test_cli_nonexistent_file() {
 
 #[test]
 fn test_cli_invalid_style() {
-    if !binary_exists() {
-        eprintln!("Skipping test: binary not built");
-        return;
-    }
-
-    let output = Command::new(binary_path())
+    let output = Command::new(BINARY_PATH)
         .args(["-s", "invalid_style"])
         .output()
         .expect("Failed to execute command");
