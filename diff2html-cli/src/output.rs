@@ -63,7 +63,7 @@ const AUTO_BASE_STYLE: &str = r#"<style>
 </style>"#;
 
 // diff2html-ui JavaScript bundle CDN
-const DIFF2HTML_UI_JS: &str = r#"<script src="https://cdnjs.cloudflare.com/ajax/libs/diff2html/3.4.48/diff2html-ui.min.js"></script>"#;
+const DIFF2HTML_UI_JS: &str = r#"<script src="https://cdn.jsdelivr.net/npm/diff2html@3.4.55/bundles/js/diff2html-ui.min.js"></script>"#;
 
 /// Generate output based on configuration and input.
 pub fn get_output(
