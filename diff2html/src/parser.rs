@@ -331,19 +331,18 @@ impl ParserState {
 
 /// Checks if there's a hunk header before the next file starts.
 fn exist_hunk_header(lines: &[&str], start_idx: usize) -> bool {
-    let mut idx = start_idx;
-    while idx < lines.len().saturating_sub(3) {
-        let line = lines[idx];
-        if line.starts_with("diff") {
-            return false;
+    for window in lines[start_idx..].windows(3) {
+        if let [first, second, third] = window {
+            if first.starts_with("diff") {
+                return false;
+            }
+            if first.starts_with(OLD_FILE_NAME_HEADER)
+                && second.starts_with(NEW_FILE_NAME_HEADER)
+                && third.starts_with(HUNK_HEADER_PREFIX)
+            {
+                return true;
+            }
         }
-        if lines[idx].starts_with(OLD_FILE_NAME_HEADER)
-            && lines[idx + 1].starts_with(NEW_FILE_NAME_HEADER)
-            && lines[idx + 2].starts_with(HUNK_HEADER_PREFIX)
-        {
-            return true;
-        }
-        idx += 1;
     }
     false
 }
