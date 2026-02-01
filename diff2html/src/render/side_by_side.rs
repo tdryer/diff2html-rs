@@ -370,11 +370,18 @@ impl SideBySideRenderer {
     }
 }
 
-/// A prepared diff line ready for rendering.
+/// A prepared diff line ready for rendering in the side-by-side view.
+///
+/// This struct holds all the information needed to render a single line
+/// in either the left (old) or right (new) side of a side-by-side diff view.
 struct PreparedLine {
+    /// The CSS class to apply to this line (e.g., insert, delete, context).
     css_class: CSSLineClass,
+    /// The prefix character for this line (typically '+', '-', or ' ').
     prefix: String,
+    /// The actual content of the line, potentially with inline diff highlighting.
     content: String,
+    /// The line number in the file, or `None` for empty placeholder lines.
     number: Option<u32>,
 }
 
