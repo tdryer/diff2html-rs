@@ -65,6 +65,15 @@ const AUTO_BASE_STYLE: &str = r#"<style>
 // diff2html-ui JavaScript bundle CDN
 const DIFF2HTML_UI_JS: &str = r#"<script src="https://cdn.jsdelivr.net/npm/diff2html@3.4.55/bundles/js/diff2html-ui.min.js"></script>"#;
 
+/// Escape HTML special characters to prevent XSS injection.
+fn escape_html(s: &str) -> String {
+    s.replace('&', "&amp;")
+        .replace('<', "&lt;")
+        .replace('>', "&gt;")
+        .replace('"', "&quot;")
+        .replace('\'', "&#x27;")
+}
+
 /// Generate output based on configuration and input.
 pub fn get_output(
     diff2html_config: &Diff2HtmlConfig,
@@ -131,16 +140,20 @@ fn prepare_html(diff_content: &str, config: &CliConfig) -> Result<String> {
         ""
     };
 
+    // Escape user-provided values to prevent XSS injection
+    let escaped_title = escape_html(&config.page_title);
+    let escaped_header = escape_html(&config.page_header);
+
     // Perform replacements
     let result = template
-        .replace("<!--diff2html-title-->", &config.page_title)
+        .replace("<!--diff2html-title-->", &escaped_title)
         .replace("<!--diff2html-css-->", &css_content)
         .replace("<!--diff2html-js-ui-->", DIFF2HTML_UI_JS)
         .replace("//diff2html-fileListToggle", &file_list_toggle)
         .replace("//diff2html-fileContentToggle", file_content_toggle)
         .replace("//diff2html-synchronisedScroll", synchronised_scroll)
         .replace("//diff2html-highlightCode", highlight_code)
-        .replace("<!--diff2html-header-->", &config.page_header)
+        .replace("<!--diff2html-header-->", &escaped_header)
         .replace("<!--diff2html-diff-->", diff_content);
 
     Ok(result)
@@ -298,5 +311,46 @@ mod tests {
         assert!(!result.contains("diff2htmlUi.fileContentToggle();"));
         assert!(!result.contains("diff2htmlUi.synchronisedScroll();"));
         assert!(!result.contains("diff2htmlUi.highlightCode();"));
+    }
+
+    #[test]
+    fn test_escape_html() {
+        assert_eq!(
+            escape_html("<script>alert('xss')</script>"),
+            "&lt;script&gt;alert(&#x27;xss&#x27;)&lt;/script&gt;"
+        );
+        assert_eq!(escape_html("a & b"), "a &amp; b");
+        assert_eq!(escape_html("\"quoted\""), "&quot;quoted&quot;");
+        assert_eq!(escape_html("normal text"), "normal text");
+    }
+
+    #[test]
+    fn test_prepare_html_escapes_xss_in_title_and_header() {
+        let config = CliConfig {
+            input_type: crate::args::InputType::Command,
+            format_type: FormatType::Html,
+            output_type: crate::args::OutputType::Preview,
+            output_file: None,
+            page_title: "<script>alert('xss')</script>".to_string(),
+            page_header: "<img src=x onerror=alert('xss')>".to_string(),
+            html_wrapper_template: None,
+            show_files_open: false,
+            file_content_toggle: false,
+            synchronised_scroll: false,
+            highlight_code: false,
+            color_scheme: ColorSchemeType::Light,
+            ignore: vec![],
+            extra_args: vec![],
+        };
+
+        let result = prepare_html("", &config).unwrap();
+
+        // Verify that the raw script tags are NOT in the output
+        assert!(!result.contains("<script>alert"));
+        assert!(!result.contains("<img src=x onerror"));
+
+        // Verify that the escaped versions ARE in the output
+        assert!(result.contains("&lt;script&gt;"));
+        assert!(result.contains("&lt;img src=x onerror"));
     }
 }
