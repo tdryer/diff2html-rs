@@ -3,9 +3,11 @@
 //! This module provides shared utilities used by the renderers including
 //! HTML escaping, line deconstruction, diff highlighting, and CSS class mappings.
 
+use regex::Regex;
 use similar::{ChangeTag, TextDiff};
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
+use std::sync::LazyLock;
 
 use crate::types::{ColorScheme, DiffFile, DiffLineParts, DiffStyle, LineMatchingType, LineType};
 
@@ -284,16 +286,22 @@ pub fn to_css_class(line_type: LineType) -> CSSLineClass {
     }
 }
 
+/// Regex pattern to match <ins> elements in HTML.
+static INS_ELEMENT_REGEX: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"<ins[^>]*>(.|\n)*?</ins>").unwrap());
+
+/// Regex pattern to match <del> elements in HTML.
+static DEL_ELEMENT_REGEX: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"<del[^>]*>(.|\n)*?</del>").unwrap());
+
 /// Remove <ins> elements from HTML string.
 fn remove_ins_elements(line: &str) -> String {
-    let re = regex::Regex::new(r"<ins[^>]*>(.|\n)*?</ins>").unwrap();
-    re.replace_all(line, "").to_string()
+    INS_ELEMENT_REGEX.replace_all(line, "").to_string()
 }
 
 /// Remove <del> elements from HTML string.
 fn remove_del_elements(line: &str) -> String {
-    let re = regex::Regex::new(r"<del[^>]*>(.|\n)*?</del>").unwrap();
-    re.replace_all(line, "").to_string()
+    DEL_ELEMENT_REGEX.replace_all(line, "").to_string()
 }
 
 /// Highlight differences between two diff lines.
