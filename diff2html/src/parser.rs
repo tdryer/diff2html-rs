@@ -478,15 +478,15 @@ pub fn parse(diff_input: &str, config: &DiffParserConfig) -> Vec<DiffFile> {
         {
             if file.old_name.is_empty() && line.starts_with("--- ") {
                 let name = get_src_filename(line, config.src_prefix.as_deref());
-                file.old_name = name.clone();
                 file.language = get_extension(&name, &file.language);
+                file.old_name = name;
                 continue;
             }
 
             if file.new_name.is_empty() && line.starts_with("+++ ") {
                 let name = get_dst_filename(line, config.dst_prefix.as_deref());
-                file.new_name = name.clone();
                 file.language = get_extension(&name, &file.language);
+                file.new_name = name;
                 continue;
             }
         }
