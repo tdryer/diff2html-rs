@@ -1,5 +1,7 @@
 //! Configuration conversion from CLI arguments to library config.
 
+use anyhow::{Result, bail};
+
 use crate::args::{
     Args, ColorSchemeType, DiffStyleType, FormatType, InputType, LineMatchingType, OutputType,
     StyleType, SummaryType,
@@ -42,7 +44,19 @@ pub struct CliConfig {
 }
 
 /// Parse CLI arguments into library config and CLI-specific config.
-pub fn parse_args(args: &Args) -> (Diff2HtmlConfig, CliConfig) {
+///
+/// # Errors
+///
+/// Returns an error if `match_words_threshold` is not in the range 0.0-1.0.
+pub fn parse_args(args: &Args) -> Result<(Diff2HtmlConfig, CliConfig)> {
+    // Validate match_words_threshold is in range 0.0-1.0
+    if !(0.0..=1.0).contains(&args.match_words_threshold) {
+        bail!(
+            "match_words_threshold must be between 0.0 and 1.0, got {}",
+            args.match_words_threshold
+        );
+    }
+
     let diff2html_config = Diff2HtmlConfig {
         output_format: match args.style {
             StyleType::Line => OutputFormat::LineByLine,
@@ -99,5 +113,5 @@ pub fn parse_args(args: &Args) -> (Diff2HtmlConfig, CliConfig) {
         extra_args: args.extra_args.clone(),
     };
 
-    (diff2html_config, cli_config)
+    Ok((diff2html_config, cli_config))
 }

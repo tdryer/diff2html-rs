@@ -29,7 +29,7 @@ mod exit_codes {
 
 fn run() -> Result<u8> {
     let args = Args::parse();
-    let (diff2html_config, cli_config) = parse_args(&args);
+    let (diff2html_config, cli_config) = parse_args(&args)?;
 
     // Get input from specified source
     let input = get_input(
