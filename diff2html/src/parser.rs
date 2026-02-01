@@ -90,6 +90,17 @@ static UNIX_DIFF_BINARY_START: LazyLock<Regex> = LazyLock::new(|| {
     Regex::new(r#"^Binary files "?([a-ciow]/.+)"? and "?([a-ciow]/.+)"? differ"#).unwrap()
 });
 
+// Filename extraction patterns (used in get_filename hot path)
+static FILENAME_WITH_SRC_PREFIX: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r#"^\-\-\- "?(.+?)"?$"#).unwrap());
+static FILENAME_WITH_DST_PREFIX: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r#"^\+\+\+ "?(.+?)"?$"#).unwrap());
+static FILENAME_NO_PREFIX: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r#"^"?(.+?)"?$"#).unwrap());
+static TIMESTAMP_SUFFIX: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"\s+\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(?:\.\d+)? [+-]\d{4}.*$").unwrap()
+});
+
 /// Base prefixes used in diff file paths.
 const BASE_DIFF_FILENAME_PREFIXES: &[&str] = &["a/", "b/", "i/", "w/", "c/", "o/"];
 
@@ -139,19 +150,31 @@ fn get_filename(line: &str, line_prefix: Option<&str>, extra_prefix: Option<&str
         BASE_DIFF_FILENAME_PREFIXES.to_vec()
     };
 
-    let filename = if let Some(prefix) = line_prefix {
-        let pattern = format!(r#"^{} "?(.+?)"?$"#, escape_for_regexp(prefix));
-        let re = Regex::new(&pattern).unwrap();
-        re.captures(line)
+    let filename = match line_prefix {
+        Some("---") => FILENAME_WITH_SRC_PREFIX
+            .captures(line)
             .and_then(|caps| caps.get(1))
             .map(|m| m.as_str().to_string())
-            .unwrap_or_default()
-    } else {
-        let re = Regex::new(r#"^"?(.+?)"?$"#).unwrap();
-        re.captures(line)
+            .unwrap_or_default(),
+        Some("+++") => FILENAME_WITH_DST_PREFIX
+            .captures(line)
             .and_then(|caps| caps.get(1))
             .map(|m| m.as_str().to_string())
-            .unwrap_or_default()
+            .unwrap_or_default(),
+        Some(prefix) => {
+            // Fallback for unexpected prefixes (compile regex dynamically)
+            let pattern = format!(r#"^{} "?(.+?)"?$"#, escape_for_regexp(prefix));
+            let re = Regex::new(&pattern).unwrap();
+            re.captures(line)
+                .and_then(|caps| caps.get(1))
+                .map(|m| m.as_str().to_string())
+                .unwrap_or_default()
+        }
+        None => FILENAME_NO_PREFIX
+            .captures(line)
+            .and_then(|caps| caps.get(1))
+            .map(|m| m.as_str().to_string())
+            .unwrap_or_default(),
     };
 
     // Remove matching prefix
@@ -162,9 +185,9 @@ fn get_filename(line: &str, line_prefix: Option<&str>, extra_prefix: Option<&str
         .unwrap_or(filename);
 
     // Remove timestamp suffix (e.g., "2016-10-25 11:37:14.000000000 +0200")
-    let timestamp_re =
-        Regex::new(r"\s+\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}(?:\.\d+)? [+-]\d{4}.*$").unwrap();
-    timestamp_re.replace(&fname_without_prefix, "").to_string()
+    TIMESTAMP_SUFFIX
+        .replace(&fname_without_prefix, "")
+        .to_string()
 }
 
 /// Gets source filename from a "--- " line.
