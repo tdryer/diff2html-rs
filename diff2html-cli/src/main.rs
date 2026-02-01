@@ -1,3 +1,5 @@
+#![forbid(unsafe_code)]
+
 //! diff2html CLI - Generate HTML from unified diffs.
 //!
 //! A command-line tool for converting unified diff output to HTML.

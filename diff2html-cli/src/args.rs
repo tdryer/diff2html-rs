@@ -9,7 +9,7 @@ use clap::{Parser, ValueEnum};
 #[command(
     name = "diff2html",
     about = "Generate HTML from unified diffs",
-    version,
+    version
 )]
 pub struct Args {
     /// Output style

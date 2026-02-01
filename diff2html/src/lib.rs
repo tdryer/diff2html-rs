@@ -1,3 +1,5 @@
+#![forbid(unsafe_code)]
+
 //! diff2html - Parse unified diffs and generate HTML.
 //!
 //! This library provides functionality to parse unified diff format and render
