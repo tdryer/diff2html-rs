@@ -10,8 +10,6 @@ use clap::{Parser, ValueEnum};
     name = "diff2html",
     about = "Generate HTML from unified diffs",
     version,
-    after_help = "For more information, check out https://diff2html.xyz/\n\
-                  For support, check out https://github.com/rtfpessoa/diff2html-cli"
 )]
 pub struct Args {
     /// Output style

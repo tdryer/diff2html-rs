@@ -163,8 +163,8 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ## Credits
 
-This is a Rust port of:
+This is a Rust port [diff2html](https://diff2html.xyz/) by [Rodrigo
+Fernandes](https://github.com/rtfpessoa):
+
 - [diff2html](https://github.com/rtfpessoa/diff2html) - Original TypeScript library
 - [diff2html-cli](https://github.com/rtfpessoa/diff2html-cli) - Original CLI tool
-
-Created by [rtfpessoa](https://github.com/rtfpessoa).

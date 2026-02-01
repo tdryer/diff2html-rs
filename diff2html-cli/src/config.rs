@@ -73,8 +73,8 @@ pub fn parse_args(args: &Args) -> (Diff2HtmlConfig, CliConfig) {
         ..Default::default()
     };
 
-    let default_title = "Diff to HTML by rtfpessoa";
-    let default_header = r#"Diff to HTML by <a href="https://github.com/rtfpessoa">rtfpessoa</a>"#;
+    let default_title = "Diff to HTML";
+    let default_header = r#"Diff to HTML"#;
 
     let cli_config = CliConfig {
         input_type: args.input,
