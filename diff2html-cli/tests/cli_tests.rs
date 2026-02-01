@@ -424,6 +424,7 @@ fn test_cli_empty_input() {
         .args(["-i", "stdin", "-o", "stdout"])
         .stdin(std::process::Stdio::piped())
         .stdout(std::process::Stdio::piped())
+        .stderr(std::process::Stdio::piped())
         .spawn()
         .expect("Failed to spawn command");
 
@@ -432,8 +433,17 @@ fn test_cli_empty_input() {
     let output = child
         .wait_with_output()
         .expect("Failed to wait for command");
-    // Empty input should succeed (or at least not crash)
-    assert!(output.status.success() || output.status.code() == Some(0));
+    // Empty input should return exit code 3 (matching original TypeScript implementation)
+    assert_eq!(
+        output.status.code(),
+        Some(3),
+        "Empty input should return exit code 3"
+    );
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        stderr.contains("input is empty"),
+        "Should display empty input message"
+    );
 }
 
 // =============================================================================
