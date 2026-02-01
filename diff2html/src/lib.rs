@@ -3,7 +3,7 @@
 //! diff2html - Parse unified diffs and generate HTML.
 //!
 //! This library provides functionality to parse unified diff format and render
-//! it as HTML, similar to the JavaScript diff2html library.
+//! it as HTML.
 //!
 //! # Quick Start
 //!
@@ -113,7 +113,6 @@ pub use types::{
 /// Unified configuration for diff2html.
 ///
 /// This struct combines all configuration options for parsing and rendering diffs.
-/// It provides a single configuration point matching the JavaScript diff2html API.
 ///
 /// # Example
 ///
