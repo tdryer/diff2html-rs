@@ -2,6 +2,7 @@
 //!
 //! These tests verify the CLI binary works correctly with various inputs and options.
 
+use std::io::Write;
 use std::process::Command;
 
 /// Path to the built binary, provided by Cargo at compile time
@@ -95,7 +96,6 @@ fn test_cli_stdin_input() {
         .spawn()
         .expect("Failed to spawn command");
 
-    use std::io::Write;
     child
         .stdin
         .take()
@@ -131,7 +131,6 @@ fn test_cli_html_format() {
         .spawn()
         .expect("Failed to spawn command");
 
-    use std::io::Write;
     child
         .stdin
         .take()
@@ -167,7 +166,6 @@ fn test_cli_json_format() {
         .spawn()
         .expect("Failed to spawn command");
 
-    use std::io::Write;
     child
         .stdin
         .take()
@@ -207,7 +205,6 @@ fn test_cli_line_by_line_style() {
         .spawn()
         .expect("Failed to spawn command");
 
-    use std::io::Write;
     child
         .stdin
         .take()
@@ -239,7 +236,6 @@ fn test_cli_side_by_side_style() {
         .spawn()
         .expect("Failed to spawn command");
 
-    use std::io::Write;
     child
         .stdin
         .take()
@@ -275,7 +271,6 @@ fn test_cli_dark_color_scheme() {
         .spawn()
         .expect("Failed to spawn command");
 
-    use std::io::Write;
     child
         .stdin
         .take()
@@ -307,7 +302,6 @@ fn test_cli_light_color_scheme() {
         .spawn()
         .expect("Failed to spawn command");
 
-    use std::io::Write;
     child
         .stdin
         .take()
@@ -343,7 +337,6 @@ fn test_cli_word_diff_style() {
         .spawn()
         .expect("Failed to spawn command");
 
-    use std::io::Write;
     child
         .stdin
         .take()
@@ -369,7 +362,6 @@ fn test_cli_char_diff_style() {
         .spawn()
         .expect("Failed to spawn command");
 
-    use std::io::Write;
     child
         .stdin
         .take()
@@ -399,7 +391,6 @@ fn test_cli_multiple_files() {
         .spawn()
         .expect("Failed to spawn command");
 
-    use std::io::Write;
     child
         .stdin
         .take()
@@ -436,7 +427,6 @@ fn test_cli_empty_input() {
         .spawn()
         .expect("Failed to spawn command");
 
-    use std::io::Write;
     child.stdin.take().unwrap().write_all(b"").unwrap();
 
     let output = child
@@ -462,7 +452,6 @@ fn test_cli_binary_diff() {
         .spawn()
         .expect("Failed to spawn command");
 
-    use std::io::Write;
     child
         .stdin
         .take()
@@ -502,7 +491,6 @@ fn test_cli_combined_diff() {
         .spawn()
         .expect("Failed to spawn command");
 
-    use std::io::Write;
     child
         .stdin
         .take()
@@ -534,7 +522,6 @@ fn test_cli_custom_title() {
         .spawn()
         .expect("Failed to spawn command");
 
-    use std::io::Write;
     child
         .stdin
         .take()
