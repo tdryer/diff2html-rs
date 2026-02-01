@@ -5,8 +5,8 @@
 //! - Git Diff: https://git-scm.com/docs/git-diff-tree#_raw_output_format
 //! - Git Combined Diff: https://git-scm.com/docs/git-diff-tree#_combined_diff_format
 
-use once_cell::sync::Lazy;
 use regex::Regex;
+use std::sync::LazyLock;
 
 use crate::types::{Checksum, DiffBlock, DiffFile, DiffLine, FileMode, LineType};
 
@@ -41,50 +41,52 @@ impl std::fmt::Debug for DiffParserConfig {
 }
 
 // Regex patterns for parsing diff metadata
-static OLD_MODE: Lazy<Regex> = Lazy::new(|| Regex::new(r"^old mode (\d{6})").unwrap());
-static NEW_MODE: Lazy<Regex> = Lazy::new(|| Regex::new(r"^new mode (\d{6})").unwrap());
-static DELETED_FILE_MODE: Lazy<Regex> =
-    Lazy::new(|| Regex::new(r"^deleted file mode (\d{6})").unwrap());
-static NEW_FILE_MODE: Lazy<Regex> = Lazy::new(|| Regex::new(r"^new file mode (\d{6})").unwrap());
+static OLD_MODE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^old mode (\d{6})").unwrap());
+static NEW_MODE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^new mode (\d{6})").unwrap());
+static DELETED_FILE_MODE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"^deleted file mode (\d{6})").unwrap());
+static NEW_FILE_MODE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"^new file mode (\d{6})").unwrap());
 
-static COPY_FROM: Lazy<Regex> = Lazy::new(|| Regex::new(r#"^copy from "?(.+)"?"#).unwrap());
-static COPY_TO: Lazy<Regex> = Lazy::new(|| Regex::new(r#"^copy to "?(.+)"?"#).unwrap());
+static COPY_FROM: LazyLock<Regex> = LazyLock::new(|| Regex::new(r#"^copy from "?(.+)"?"#).unwrap());
+static COPY_TO: LazyLock<Regex> = LazyLock::new(|| Regex::new(r#"^copy to "?(.+)"?"#).unwrap());
 
-static RENAME_FROM: Lazy<Regex> = Lazy::new(|| Regex::new(r#"^rename from "?(.+)"?"#).unwrap());
-static RENAME_TO: Lazy<Regex> = Lazy::new(|| Regex::new(r#"^rename to "?(.+)"?"#).unwrap());
+static RENAME_FROM: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r#"^rename from "?(.+)"?"#).unwrap());
+static RENAME_TO: LazyLock<Regex> = LazyLock::new(|| Regex::new(r#"^rename to "?(.+)"?"#).unwrap());
 
-static SIMILARITY_INDEX: Lazy<Regex> =
-    Lazy::new(|| Regex::new(r"^similarity index (\d+)%").unwrap());
-static DISSIMILARITY_INDEX: Lazy<Regex> =
-    Lazy::new(|| Regex::new(r"^dissimilarity index (\d+)%").unwrap());
-static INDEX: Lazy<Regex> =
-    Lazy::new(|| Regex::new(r"^index ([\da-z]+)\.\.([\da-z]+)\s*(\d{6})?").unwrap());
+static SIMILARITY_INDEX: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"^similarity index (\d+)%").unwrap());
+static DISSIMILARITY_INDEX: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"^dissimilarity index (\d+)%").unwrap());
+static INDEX: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"^index ([\da-z]+)\.\.([\da-z]+)\s*(\d{6})?").unwrap());
 
-static BINARY_FILES: Lazy<Regex> =
-    Lazy::new(|| Regex::new(r"^Binary files (.*) and (.*) differ").unwrap());
-static BINARY_DIFF: Lazy<Regex> = Lazy::new(|| Regex::new(r"^GIT binary patch").unwrap());
+static BINARY_FILES: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"^Binary files (.*) and (.*) differ").unwrap());
+static BINARY_DIFF: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^GIT binary patch").unwrap());
 
 // Combined diff patterns
-static COMBINED_INDEX: Lazy<Regex> =
-    Lazy::new(|| Regex::new(r"^index ([\da-z]+),([\da-z]+)\.\.([\da-z]+)").unwrap());
-static COMBINED_MODE: Lazy<Regex> =
-    Lazy::new(|| Regex::new(r"^mode (\d{6}),(\d{6})\.\.(\d{6})").unwrap());
-static COMBINED_NEW_FILE: Lazy<Regex> =
-    Lazy::new(|| Regex::new(r"^new file mode (\d{6})").unwrap());
-static COMBINED_DELETED_FILE: Lazy<Regex> =
-    Lazy::new(|| Regex::new(r"^deleted file mode (\d{6}),(\d{6})").unwrap());
+static COMBINED_INDEX: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"^index ([\da-z]+),([\da-z]+)\.\.([\da-z]+)").unwrap());
+static COMBINED_MODE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"^mode (\d{6}),(\d{6})\.\.(\d{6})").unwrap());
+static COMBINED_NEW_FILE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"^new file mode (\d{6})").unwrap());
+static COMBINED_DELETED_FILE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"^deleted file mode (\d{6}),(\d{6})").unwrap());
 
 // Hunk header patterns
-static HUNK_HEADER: Lazy<Regex> =
-    Lazy::new(|| Regex::new(r"^@@ -(\d+)(?:,\d+)? \+(\d+)(?:,\d+)? @@.*").unwrap());
-static COMBINED_HUNK_HEADER: Lazy<Regex> = Lazy::new(|| {
+static HUNK_HEADER: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"^@@ -(\d+)(?:,\d+)? \+(\d+)(?:,\d+)? @@.*").unwrap());
+static COMBINED_HUNK_HEADER: LazyLock<Regex> = LazyLock::new(|| {
     Regex::new(r"^@@@ -(\d+)(?:,\d+)? -(\d+)(?:,\d+)? \+(\d+)(?:,\d+)? @@@.*").unwrap()
 });
 
 // Git diff start pattern
-static GIT_DIFF_START: Lazy<Regex> =
-    Lazy::new(|| Regex::new(r#"^diff --git "?([a-ciow]/.+)"? "?([a-ciow]/.+)"?"#).unwrap());
-static UNIX_DIFF_BINARY_START: Lazy<Regex> = Lazy::new(|| {
+static GIT_DIFF_START: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r#"^diff --git "?([a-ciow]/.+)"? "?([a-ciow]/.+)"?"#).unwrap());
+static UNIX_DIFF_BINARY_START: LazyLock<Regex> = LazyLock::new(|| {
     Regex::new(r#"^Binary files "?([a-ciow]/.+)"? and "?([a-ciow]/.+)"? differ"#).unwrap()
 });
 

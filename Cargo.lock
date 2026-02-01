@@ -218,7 +218,6 @@ name = "diff2html"
 version = "0.1.0"
 dependencies = [
  "handlebars",
- "once_cell",
  "regex",
  "serde",
  "serde_json",

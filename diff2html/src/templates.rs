@@ -5,8 +5,8 @@
 //! file I/O.
 
 use handlebars::Handlebars;
-use once_cell::sync::Lazy;
 use serde::Serialize;
+use std::sync::LazyLock;
 use thiserror::Error;
 
 /// CSS stylesheet for diff2html rendering.
@@ -92,7 +92,7 @@ pub enum TemplateError {
 }
 
 /// Global template registry initialized on first use.
-static TEMPLATES: Lazy<Handlebars<'static>> = Lazy::new(|| {
+static TEMPLATES: LazyLock<Handlebars<'static>> = LazyLock::new(|| {
     let mut hbs = Handlebars::new();
 
     // Disable HTML escaping by default since we handle it ourselves
