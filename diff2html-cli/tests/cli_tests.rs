@@ -41,7 +41,15 @@ fn test_cli_help() {
 
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
-    assert!(stdout.contains("diff2html") || stdout.contains("Usage"));
+    // Help should contain both the program name and usage information
+    assert!(
+        stdout.contains("diff2html"),
+        "Help output should contain program name"
+    );
+    assert!(
+        stdout.contains("Usage"),
+        "Help output should contain Usage section"
+    );
 }
 
 #[test]
@@ -58,7 +66,15 @@ fn test_cli_version() {
 
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
-    assert!(stdout.contains("diff2html") || stdout.contains(env!("CARGO_PKG_VERSION")));
+    // Version output should contain both program name and version number
+    assert!(
+        stdout.contains("diff2html"),
+        "Version output should contain program name"
+    );
+    assert!(
+        stdout.contains(env!("CARGO_PKG_VERSION")),
+        "Version output should contain version number"
+    );
 }
 
 // =============================================================================
@@ -86,7 +102,11 @@ fn test_cli_file_input() {
 
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
-    assert!(stdout.contains("d2h-wrapper") || stdout.contains("sample"));
+    // HTML output should contain the d2h-wrapper class
+    assert!(
+        stdout.contains("d2h-wrapper"),
+        "HTML output should contain d2h-wrapper class"
+    );
 }
 
 #[test]
@@ -119,7 +139,11 @@ fn test_cli_stdin_input() {
         .expect("Failed to wait for command");
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
-    assert!(stdout.contains("d2h-wrapper") || stdout.contains("sample"));
+    // HTML output should contain the d2h-wrapper class
+    assert!(
+        stdout.contains("d2h-wrapper"),
+        "HTML output should contain d2h-wrapper class"
+    );
 }
 
 // =============================================================================
@@ -156,8 +180,15 @@ fn test_cli_html_format() {
         .expect("Failed to wait for command");
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
-    assert!(stdout.contains("<") && stdout.contains(">"));
-    assert!(stdout.contains("d2h-") || stdout.contains("html"));
+    // HTML output should contain HTML tags and d2h- prefixed CSS classes
+    assert!(
+        stdout.contains("<") && stdout.contains(">"),
+        "HTML output should contain HTML tags"
+    );
+    assert!(
+        stdout.contains("d2h-"),
+        "HTML output should contain d2h- prefixed CSS classes"
+    );
 }
 
 #[test]
@@ -190,9 +221,15 @@ fn test_cli_json_format() {
         .expect("Failed to wait for command");
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
-    // JSON output should start with [ and be valid JSON
-    assert!(stdout.trim().starts_with('['));
-    assert!(stdout.contains("oldName") || stdout.contains("old_name"));
+    // JSON output should start with [ and contain expected fields
+    assert!(
+        stdout.trim().starts_with('['),
+        "JSON output should start with ["
+    );
+    assert!(
+        stdout.contains("oldName"),
+        "JSON output should contain oldName field"
+    );
 }
 
 // =============================================================================
@@ -229,7 +266,11 @@ fn test_cli_line_by_line_style() {
         .expect("Failed to wait for command");
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
-    assert!(stdout.contains("d2h-file-diff") || stdout.contains("d2h-diff-table"));
+    // Line-by-line style should contain the d2h-file-diff class
+    assert!(
+        stdout.contains("d2h-file-diff"),
+        "Line-by-line output should contain d2h-file-diff class"
+    );
 }
 
 #[test]
@@ -262,7 +303,11 @@ fn test_cli_side_by_side_style() {
         .expect("Failed to wait for command");
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
-    assert!(stdout.contains("d2h-file-side-diff") || stdout.contains("d2h-files-diff"));
+    // Side-by-side style should contain the d2h-file-side-diff class
+    assert!(
+        stdout.contains("d2h-file-side-diff"),
+        "Side-by-side output should contain d2h-file-side-diff class"
+    );
 }
 
 // =============================================================================
@@ -299,7 +344,11 @@ fn test_cli_dark_color_scheme() {
         .expect("Failed to wait for command");
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
-    assert!(stdout.contains("dark") || stdout.contains("d2h-dark"));
+    // Dark color scheme should use d2h-dark-color-scheme class
+    assert!(
+        stdout.contains("d2h-dark-color-scheme"),
+        "Dark color scheme output should contain d2h-dark-color-scheme class"
+    );
 }
 
 #[test]
@@ -332,7 +381,11 @@ fn test_cli_light_color_scheme() {
         .expect("Failed to wait for command");
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
-    assert!(stdout.contains("light") || stdout.contains("d2h-light"));
+    // Light color scheme should use d2h-light-color-scheme class
+    assert!(
+        stdout.contains("d2h-light-color-scheme"),
+        "Light color scheme output should contain d2h-light-color-scheme class"
+    );
 }
 
 // =============================================================================
@@ -435,8 +488,15 @@ fn test_cli_multiple_files() {
         .expect("Failed to wait for command");
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
-    // Should contain both files
-    assert!(stdout.contains("init.js") || stdout.contains("event.js"));
+    // Should contain both files from the diff
+    assert!(
+        stdout.contains("init.js"),
+        "Multiple files output should contain init.js"
+    );
+    assert!(
+        stdout.contains("event.js"),
+        "Multiple files output should contain event.js"
+    );
 }
 
 // =============================================================================
@@ -501,7 +561,15 @@ fn test_cli_binary_diff() {
         .expect("Failed to wait for command");
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
-    assert!(stdout.contains("Binary") || stdout.contains("binary") || stdout.contains(".png"));
+    // Binary diff should show the file name and binary indicator
+    assert!(
+        stdout.contains(".png"),
+        "Binary diff output should contain .png file extension"
+    );
+    assert!(
+        stdout.contains("Binary files differ"),
+        "Binary diff output should contain 'Binary files differ' message"
+    );
 }
 
 // =============================================================================
