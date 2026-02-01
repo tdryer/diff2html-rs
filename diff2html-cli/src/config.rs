@@ -95,14 +95,8 @@ pub fn parse_args(args: &Args) -> Result<(Diff2HtmlConfig, CliConfig)> {
         format_type: args.format,
         output_type: args.output,
         output_file: args.file.clone(),
-        page_title: args
-            .title
-            .clone()
-            .unwrap_or_else(|| default_title.to_string()),
-        page_header: args
-            .title
-            .clone()
-            .unwrap_or_else(|| default_header.to_string()),
+        page_title: args.title.as_deref().unwrap_or(default_title).to_string(),
+        page_header: args.title.as_deref().unwrap_or(default_header).to_string(),
         html_wrapper_template: args.html_wrapper_template.clone(),
         show_files_open: args.summary == SummaryType::Open,
         file_content_toggle: args.file_content_toggle,
