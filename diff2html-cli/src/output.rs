@@ -18,9 +18,6 @@ use crate::config::CliConfig;
 /// Default HTML wrapper template.
 const DEFAULT_TEMPLATE: &str = include_str!("../templates/wrapper.html");
 
-/// diff2html-ui JavaScript bundle (inlined for offline usage).
-const DIFF2HTML_UI_JS_CONTENT: &str = include_str!("../templates/diff2html-ui.min.js");
-
 // highlight.js GitHub theme CDN links
 const LIGHT_GITHUB_THEME: &str = r#"<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" />"#;
 const DARK_GITHUB_THEME: &str = r#"<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />"#;
@@ -64,6 +61,9 @@ const AUTO_BASE_STYLE: &str = r#"<style>
   }
 }
 </style>"#;
+
+// diff2html-ui JavaScript bundle CDN
+const DIFF2HTML_UI_JS: &str = r#"<script src="https://cdnjs.cloudflare.com/ajax/libs/diff2html/3.4.48/diff2html-ui.min.js"></script>"#;
 
 /// Generate output based on configuration and input.
 pub fn get_output(
@@ -131,14 +131,11 @@ fn prepare_html(diff_content: &str, config: &CliConfig) -> Result<String> {
         ""
     };
 
-    // Build inline UI script
-    let ui_script = format!("<script>\n{}\n</script>", DIFF2HTML_UI_JS_CONTENT);
-
     // Perform replacements
     let result = template
         .replace("<!--diff2html-title-->", &config.page_title)
         .replace("<!--diff2html-css-->", &css_content)
-        .replace("<!--diff2html-js-ui-->", &ui_script)
+        .replace("<!--diff2html-js-ui-->", DIFF2HTML_UI_JS)
         .replace("//diff2html-fileListToggle", &file_list_toggle)
         .replace("//diff2html-fileContentToggle", file_content_toggle)
         .replace("//diff2html-synchronisedScroll", synchronised_scroll)
