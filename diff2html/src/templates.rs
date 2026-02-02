@@ -157,6 +157,11 @@ fn register_templates(hbs: &mut Handlebars<'static>) {
 /// * `template` - The template to render
 /// * `data` - Data to pass to the template (must implement Serialize)
 ///
+/// # Panics
+///
+/// Panics if template rendering fails, which indicates a bug in the code
+/// (wrong data structure or type mismatch).
+///
 /// # Example
 ///
 /// ```
@@ -166,12 +171,12 @@ fn register_templates(hbs: &mut Handlebars<'static>) {
 /// let html = render(TemplateName::GenericWrapper, &json!({
 ///     "colorScheme": "d2h-light-color-scheme",
 ///     "content": "<p>Hello</p>"
-/// })).unwrap();
+/// }));
 /// ```
-pub fn render<T: Serialize>(template: TemplateName, data: &T) -> Result<String, TemplateError> {
+pub fn render<T: Serialize>(template: TemplateName, data: &T) -> String {
     TEMPLATES
         .render(template.as_str(), data)
-        .map_err(TemplateError::from)
+        .unwrap_or_else(|e| panic!("Failed to render template '{}': {}", template.as_str(), e))
 }
 
 /// Render a template by name with the given data.
@@ -183,8 +188,15 @@ pub fn render<T: Serialize>(template: TemplateName, data: &T) -> Result<String, 
 ///
 /// * `name` - The template name as a string
 /// * `data` - Data to pass to the template (must implement Serialize)
-pub fn render_by_name<T: Serialize>(name: &str, data: &T) -> Result<String, TemplateError> {
-    TEMPLATES.render(name, data).map_err(TemplateError::from)
+///
+/// # Panics
+///
+/// Panics if template rendering fails, which indicates a bug in the code
+/// (wrong data structure, type mismatch, or invalid template name).
+pub fn render_by_name<T: Serialize>(name: &str, data: &T) -> String {
+    TEMPLATES
+        .render(name, data)
+        .unwrap_or_else(|e| panic!("Failed to render template '{}': {}", name, e))
 }
 
 /// Get access to the global Handlebars registry.
@@ -208,8 +220,7 @@ mod tests {
                 "colorScheme": "d2h-light-color-scheme",
                 "content": "<p>Test content</p>"
             }),
-        )
-        .unwrap();
+        );
 
         assert!(result.contains("d2h-wrapper"));
         assert!(result.contains("d2h-light-color-scheme"));
@@ -225,8 +236,7 @@ mod tests {
                 "filesNumber": 3,
                 "files": "<li>file1.txt</li>"
             }),
-        )
-        .unwrap();
+        );
 
         assert!(result.contains("d2h-file-list-wrapper"));
         assert!(result.contains("Files changed (3)"));
@@ -241,8 +251,7 @@ mod tests {
                 "oldNumber": "10",
                 "newNumber": "15"
             }),
-        )
-        .unwrap();
+        );
 
         assert!(result.contains("line-num1"));
         assert!(result.contains("line-num2"));
@@ -262,8 +271,7 @@ mod tests {
                 "prefix": "+",
                 "content": "new line"
             }),
-        )
-        .unwrap();
+        );
 
         assert!(result.contains("<tr>"));
         assert!(result.contains("d2h-ins"));
@@ -284,8 +292,7 @@ mod tests {
                 "prefix": "",
                 "content": ""
             }),
-        )
-        .unwrap();
+        );
 
         // When content is empty, should show <br>
         assert!(result.contains("<br>"));
@@ -293,7 +300,7 @@ mod tests {
 
     #[test]
     fn test_render_tag_file_added() {
-        let result = render(TemplateName::TagFileAdded, &json!({})).unwrap();
+        let result = render(TemplateName::TagFileAdded, &json!({}));
 
         assert!(result.contains("d2h-tag"));
         assert!(result.contains("d2h-added-tag"));
@@ -302,7 +309,7 @@ mod tests {
 
     #[test]
     fn test_render_icon_file() {
-        let result = render(TemplateName::IconFile, &json!({})).unwrap();
+        let result = render(TemplateName::IconFile, &json!({}));
 
         assert!(result.contains("<svg"));
         assert!(result.contains("d2h-icon"));
@@ -316,8 +323,7 @@ mod tests {
                 "colorScheme": "",
                 "content": "test"
             }),
-        )
-        .unwrap();
+        );
 
         assert!(result.contains("d2h-wrapper"));
     }
@@ -352,8 +358,7 @@ mod tests {
                 "filePath": "<span>test.rs</span>",
                 "diffs": "<tr><td>content</td></tr>"
             }),
-        )
-        .unwrap();
+        );
 
         assert!(result.contains("d2h-file-wrapper"));
         assert!(result.contains("d2h-123456"));
@@ -376,8 +381,7 @@ mod tests {
                     "right": "<tr><td>new</td></tr>"
                 }
             }),
-        )
-        .unwrap();
+        );
 
         assert!(result.contains("d2h-files-diff"));
         assert!(result.contains("d2h-file-side-diff"));
@@ -395,8 +399,7 @@ mod tests {
                 },
                 "contentClass": "d2h-code-line"
             }),
-        )
-        .unwrap();
+        );
 
         assert!(result.contains("File without changes"));
     }
@@ -413,8 +416,7 @@ mod tests {
                 "contentClass": "d2h-code-line",
                 "blockHeader": "@@ -1,3 +1,4 @@"
             }),
-        )
-        .unwrap();
+        );
 
         assert!(result.contains("d2h-info"));
         assert!(result.contains("@@ -1,3 +1,4 @@"));

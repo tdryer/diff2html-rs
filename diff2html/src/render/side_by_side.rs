@@ -59,7 +59,6 @@ impl SideBySideRenderer {
                 "content": diffs_html,
             }),
         )
-        .unwrap_or_default()
     }
 
     /// Generate the HTML for a single file diff.
@@ -69,10 +68,8 @@ impl SideBySideRenderer {
         }
 
         let file_icon = get_file_icon(file);
-        let file_icon_html = templates::render_by_name(&format!("icon-{}", file_icon), &json!({}))
-            .unwrap_or_default();
-        let file_tag_html = templates::render_by_name(&format!("tag-{}", file_icon), &json!({}))
-            .unwrap_or_default();
+        let file_icon_html = templates::render_by_name(&format!("icon-{}", file_icon), &json!({}));
+        let file_tag_html = templates::render_by_name(&format!("tag-{}", file_icon), &json!({}));
 
         let file_path_html = templates::render(
             TemplateName::GenericFilePath,
@@ -81,8 +78,7 @@ impl SideBySideRenderer {
                 "fileIcon": file_icon_html,
                 "fileTag": file_tag_html,
             }),
-        )
-        .unwrap_or_default();
+        );
 
         templates::render(
             TemplateName::SideBySideFileDiff,
@@ -98,7 +94,6 @@ impl SideBySideRenderer {
                 "filePath": file_path_html,
             }),
         )
-        .unwrap_or_default()
     }
 
     /// Generate HTML for an empty diff (file with no changes).
@@ -112,8 +107,7 @@ impl SideBySideRenderer {
                         "INFO": CSSLineClass::Info.as_str(),
                     },
                 }),
-            )
-            .unwrap_or_default(),
+            ),
             right: String::new(),
         }
     }
@@ -236,7 +230,6 @@ impl SideBySideRenderer {
                 "contentClass": "d2h-code-side-line",
             }),
         )
-        .unwrap_or_default()
     }
 
     /// Process changed lines by pairing deletions with insertions and highlighting differences.
@@ -366,7 +359,6 @@ impl SideBySideRenderer {
                 "lineNumber": line_number,
             }),
         )
-        .unwrap_or_default()
     }
 }
 

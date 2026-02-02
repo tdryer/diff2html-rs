@@ -48,8 +48,7 @@ impl FileListRenderer {
             .map(|file| {
                 let file_icon = get_file_icon(file);
                 let file_icon_html =
-                    templates::render_by_name(&format!("icon-{}", file_icon), &json!({}))
-                        .unwrap_or_default();
+                    templates::render_by_name(&format!("icon-{}", file_icon), &json!({}));
 
                 templates::render(
                     TemplateName::FileSummaryLine,
@@ -63,7 +62,6 @@ impl FileListRenderer {
                         "fileIcon": file_icon_html,
                     }),
                 )
-                .unwrap_or_default()
             })
             .collect::<Vec<_>>()
             .join("\n");
@@ -76,7 +74,6 @@ impl FileListRenderer {
                 "files": files_html,
             }),
         )
-        .unwrap_or_default()
     }
 }
 

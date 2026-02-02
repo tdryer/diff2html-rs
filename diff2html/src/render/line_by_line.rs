@@ -52,7 +52,6 @@ impl LineByLineRenderer {
                 "content": diffs_html,
             }),
         )
-        .unwrap_or_default()
     }
 
     /// Generate the HTML for a single file diff.
@@ -62,10 +61,8 @@ impl LineByLineRenderer {
         }
 
         let file_icon = get_file_icon(file);
-        let file_icon_html = templates::render_by_name(&format!("icon-{}", file_icon), &json!({}))
-            .unwrap_or_default();
-        let file_tag_html = templates::render_by_name(&format!("tag-{}", file_icon), &json!({}))
-            .unwrap_or_default();
+        let file_icon_html = templates::render_by_name(&format!("icon-{}", file_icon), &json!({}));
+        let file_tag_html = templates::render_by_name(&format!("tag-{}", file_icon), &json!({}));
 
         let file_path_html = templates::render(
             TemplateName::GenericFilePath,
@@ -74,8 +71,7 @@ impl LineByLineRenderer {
                 "fileIcon": file_icon_html,
                 "fileTag": file_tag_html,
             }),
-        )
-        .unwrap_or_default();
+        );
 
         templates::render(
             TemplateName::LineByLineFileDiff,
@@ -88,7 +84,6 @@ impl LineByLineRenderer {
                 "filePath": file_path_html,
             }),
         )
-        .unwrap_or_default()
     }
 
     /// Generate HTML for an empty diff (file with no changes).
@@ -102,7 +97,6 @@ impl LineByLineRenderer {
                 },
             }),
         )
-        .unwrap_or_default()
     }
 
     /// Generate HTML for all blocks in a file.
@@ -124,8 +118,7 @@ impl LineByLineRenderer {
                         "lineClass": "d2h-code-linenumber",
                         "contentClass": "d2h-code-line",
                     }),
-                )
-                .unwrap_or_default();
+                );
 
                 for (context_lines, old_lines, new_lines) in self.apply_line_grouping(block) {
                     if !old_lines.is_empty() && !new_lines.is_empty() && context_lines.is_empty() {
@@ -302,8 +295,7 @@ impl LineByLineRenderer {
                 "oldNumber": old_number.map(|n| n.to_string()).unwrap_or_default(),
                 "newNumber": new_number.map(|n| n.to_string()).unwrap_or_default(),
             }),
-        )
-        .unwrap_or_default();
+        );
 
         let display_prefix = if prefix == " " { "&nbsp;" } else { prefix };
 
@@ -318,7 +310,6 @@ impl LineByLineRenderer {
                 "lineNumber": line_number_html,
             }),
         )
-        .unwrap_or_default()
     }
 }
 
