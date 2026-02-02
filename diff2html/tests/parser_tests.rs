@@ -301,7 +301,10 @@ fn test_parse_special_characters() {
     assert_eq!(result.len(), 1);
     let file = &result[0];
     // Filename should contain tab character
-    assert!(file.new_name.contains('\t') || file.new_name.contains("tab"));
+    assert!(
+        file.new_name.contains('\t'),
+        "Filename should contain literal tab character"
+    );
     assert_eq!(file.language.as_str(), "scala");
     assert_eq!(file.added_lines, 2);
     assert_eq!(file.deleted_lines, 1);
