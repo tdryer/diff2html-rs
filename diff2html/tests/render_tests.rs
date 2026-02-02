@@ -161,8 +161,15 @@ fn test_html_word_diff_style() {
     };
     let result = html(diff, &config);
 
-    // Word diff should highlight the changed word
-    assert!(result.contains("<del>") || result.contains("<ins>"));
+    // Word diff should highlight the changed word with <del> and <ins> tags
+    assert!(
+        result.contains("<del>"),
+        "Word diff should contain <del> tag for deletions"
+    );
+    assert!(
+        result.contains("<ins>"),
+        "Word diff should contain <ins> tag for insertions"
+    );
 }
 
 #[test]
@@ -180,8 +187,15 @@ fn test_html_char_diff_style() {
     };
     let result = html(diff, &config);
 
-    // Char diff should produce highlighting
-    assert!(result.contains("<del>") || result.contains("<ins>"));
+    // Char diff should produce highlighting with <del> and <ins> tags
+    assert!(
+        result.contains("<del>"),
+        "Char diff should contain <del> tag for deletions"
+    );
+    assert!(
+        result.contains("<ins>"),
+        "Char diff should contain <ins> tag for insertions"
+    );
 }
 
 // =============================================================================
@@ -268,7 +282,11 @@ fn test_html_file_status_changed() {
     };
     let result = html(&diff, &config);
 
-    assert!(result.contains("CHANGED") || result.contains("d2h-changed"));
+    // Changed file should have the d2h-changed class
+    assert!(
+        result.contains("d2h-changed"),
+        "Changed file should have d2h-changed class"
+    );
 }
 
 #[test]
@@ -280,7 +298,11 @@ fn test_html_file_status_new() {
     };
     let result = html(&diff, &config);
 
-    assert!(result.contains("ADDED") || result.contains("d2h-added"));
+    // New file should have the d2h-added class
+    assert!(
+        result.contains("d2h-added"),
+        "New file should have d2h-added class"
+    );
 }
 
 #[test]
@@ -292,7 +314,11 @@ fn test_html_file_status_deleted() {
     };
     let result = html(&diff, &config);
 
-    assert!(result.contains("DELETED") || result.contains("d2h-deleted"));
+    // Deleted file should have the d2h-deleted class
+    assert!(
+        result.contains("d2h-deleted"),
+        "Deleted file should have d2h-deleted class"
+    );
 }
 
 #[test]
@@ -304,7 +330,11 @@ fn test_html_file_status_renamed() {
     };
     let result = html(&diff, &config);
 
-    assert!(result.contains("RENAMED") || result.contains("d2h-renamed"));
+    // Renamed file should have the d2h-moved class
+    assert!(
+        result.contains("d2h-moved"),
+        "Renamed file should have d2h-moved class"
+    );
 }
 
 // =============================================================================
@@ -327,7 +357,10 @@ fn test_html_escapes_special_characters() {
 
     // Should escape < and > and other special chars
     assert!(!result.contains("<script>alert"));
-    assert!(result.contains("&lt;script&gt;") || result.contains("&lt;"));
+    assert!(
+        result.contains("&lt;"),
+        "HTML output should escape < to &lt;"
+    );
 }
 
 #[test]
@@ -347,7 +380,14 @@ fn test_html_does_not_double_escape() {
 
     // The < and > should be escaped once to &lt; and &gt;
     // but not double-escaped
-    assert!(result.contains("&lt;") || result.contains("&gt;"));
+    assert!(
+        result.contains("&lt;"),
+        "HTML output should escape < to &lt;"
+    );
+    assert!(
+        result.contains("&gt;"),
+        "HTML output should escape > to &gt;"
+    );
     // Should not have &amp;lt; or &amp;gt; (double-escaped)
     assert!(!result.contains("&amp;lt;"));
     assert!(!result.contains("&amp;gt;"));
@@ -486,7 +526,10 @@ fn test_html_binary_file() {
     let result = html(&diff, &config);
 
     // Should show binary files message
-    assert!(result.contains("Binary") || result.contains("binary"));
+    assert!(
+        result.contains("Binary files differ"),
+        "Binary file output should contain 'Binary files differ' message"
+    );
 }
 
 // =============================================================================
@@ -503,7 +546,14 @@ fn test_html_rename_shows_old_and_new_names() {
     let result = html(&diff, &config);
 
     // Should show both old and new names
-    assert!(result.contains("test-bar") || result.contains("test-baz"));
+    assert!(
+        result.contains("test-bar"),
+        "Rename output should contain old name test-bar"
+    );
+    assert!(
+        result.contains("test-baz"),
+        "Rename output should contain new name test-baz"
+    );
 }
 
 // =============================================================================
@@ -538,7 +588,10 @@ fn test_html_contains_line_numbers() {
     let result = html(&diff, &config);
 
     // Should have line number elements
-    assert!(result.contains("line-num") || result.contains("linenumber"));
+    assert!(
+        result.contains("d2h-code-linenumber"),
+        "HTML output should contain d2h-code-linenumber class"
+    );
 }
 
 // =============================================================================
@@ -577,8 +630,11 @@ fn test_html_contains_file_collapse() {
     };
     let result = html(&diff, &config);
 
-    // Should have the viewed checkbox
-    assert!(result.contains("d2h-file-collapse") || result.contains("viewed"));
+    // Should have the file collapse element
+    assert!(
+        result.contains("d2h-file-collapse"),
+        "HTML output should contain d2h-file-collapse class"
+    );
 }
 
 // =============================================================================
@@ -613,5 +669,8 @@ fn test_html_contains_file_icon() {
     let result = html(&diff, &config);
 
     // Should have SVG icon
-    assert!(result.contains("<svg") || result.contains("d2h-icon"));
+    assert!(
+        result.contains("<svg"),
+        "HTML output should contain SVG icon"
+    );
 }
