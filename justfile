@@ -2,6 +2,14 @@
 default:
     just --list
 
+# Run tests with code coverage in html format and open the report
+coverage-html:
+    cargo llvm-cov --html --open
+
+# Run tests with code coverage in text format
+coverage-text:
+    cargo llvm-cov --text
+
 image_name := "diff2html-devel"
 
 # Run docker container
