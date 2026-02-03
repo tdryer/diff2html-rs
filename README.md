@@ -2,6 +2,8 @@
 
 An experimental Rust port of the [diff2html](https://diff2html.xyz/) library and CLI tool for generating HTML from diffs, built using [Claude Code](https://claude.com/product/claude-code).
 
+**This repository contains code that was primarily written by an AI coding agent.**
+
 ## Overview
 
 This project provides two crates:
