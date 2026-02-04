@@ -44,35 +44,30 @@ pub fn levenshtein(a: &str, b: &str) -> usize {
     let a_chars: Vec<char> = a.chars().collect();
     let b_chars: Vec<char> = b.chars().collect();
     let a_len = a_chars.len();
-    let b_len = b_chars.len();
 
-    // Create the distance matrix
-    let mut matrix: Vec<Vec<usize>> = vec![vec![0; a_len + 1]; b_len + 1];
+    // Two-row algorithm: only keep track of two rows at a time
+    // v0 is the previous row, v1 is the current row being computed
+    let mut v0: Vec<usize> = (0..=a_len).collect();
+    let mut v1: Vec<usize> = vec![0; a_len + 1];
 
-    // Initialize first column (distance from empty string to b[0..i])
-    for (i, row) in matrix.iter_mut().enumerate().take(b_len + 1) {
-        row[0] = i;
-    }
+    for (i, b_char) in b_chars.iter().enumerate() {
+        // First element of v1 is the edit distance from b[0..=i] to empty string
+        v1[0] = i + 1;
 
-    // Initialize first row (distance from a[0..j] to empty string)
-    for (j, val) in matrix[0].iter_mut().enumerate().take(a_len + 1) {
-        *val = j;
-    }
+        for (j, a_char) in a_chars.iter().enumerate() {
+            let deletion_cost = v0[j + 1] + 1;
+            let insertion_cost = v1[j] + 1;
+            let substitution_cost = if b_char == a_char { v0[j] } else { v0[j] + 1 };
 
-    // Fill in the rest of the matrix
-    for i in 1..=b_len {
-        for j in 1..=a_len {
-            if b_chars[i - 1] == a_chars[j - 1] {
-                matrix[i][j] = matrix[i - 1][j - 1];
-            } else {
-                matrix[i][j] = 1 + matrix[i - 1][j - 1] // substitution
-                    .min(matrix[i][j - 1]) // insertion
-                    .min(matrix[i - 1][j]); // deletion
-            }
+            v1[j + 1] = deletion_cost.min(insertion_cost).min(substitution_cost);
         }
+
+        // Swap v0 and v1 for the next iteration
+        std::mem::swap(&mut v0, &mut v1);
     }
 
-    matrix[b_len][a_len]
+    // After the last swap, the result is in v0
+    v0[a_len]
 }
 
 /// A function that computes normalized distance between two items.
