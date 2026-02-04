@@ -1,0 +1,24 @@
+name: ci
+
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+    branches:
+    - master
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  ci:
+    runs-on: ubuntu-24.04
+    steps:
+    - uses: actions/checkout@v4
+    - name: Format
+      run: cargo fmt --check
+    - name: Build
+      run: cargo build
+    - name: Test
+      run: cargo test
