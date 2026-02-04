@@ -30,3 +30,10 @@ name = "custom_parser"
 
 [[example]]
 name = "line_matching"
+
+[dev-dependencies]
+criterion = "0.5"
+
+[[bench]]
+name = "diff2html_benchmarks"
+harness = false
