@@ -1,9 +1,9 @@
 [package]
 name = "diff2html"
-version = "0.1.0"
-edition = "2024"
+version.workspace = true
+edition.workspace = true
 description = "Parse unified diffs and generate HTML"
-license = "MIT"
+license.workspace = true
 readme = "README.md"
 keywords = ["diff", "html", "git", "unified-diff", "diff-viewer"]
 categories = ["command-line-utilities", "text-processing", "visualization"]

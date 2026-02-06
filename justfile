@@ -34,3 +34,15 @@ docker:
         --env IS_SANDBOX=1 \
         --env TZ=America/Vancouver \
         {{ image_name }} kitten run-shell --shell=bash
+
+# Tag current version
+tag:
+    #!/usr/bin/env sh
+    set -e
+    if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
+        echo "Error: There are uncommitted changes." >&2
+        exit 1
+    fi
+    VERSION=$(grep '^version' Cargo.toml | sed -E 's/^version\s*=\s*"(.*)"/\1/')
+    git tag "${VERSION}"
+    echo "Tagged version ${VERSION}"

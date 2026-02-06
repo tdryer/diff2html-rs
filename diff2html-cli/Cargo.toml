@@ -1,9 +1,9 @@
 [package]
 name = "diff2html-cli"
-version = "0.1.0"
-edition = "2024"
+version.workspace = true
+edition.workspace = true
 description = "CLI tool to generate HTML from unified diffs"
-license = "MIT"
+license.workspace = true
 readme = "README.md"
 keywords = ["diff", "html", "git", "cli", "diff-viewer"]
 categories = ["command-line-utilities", "development-tools"]
